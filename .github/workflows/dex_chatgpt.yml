@@ -1,18 +1,18 @@
 on: [pull_request]
 
-name: Test ChatGPT
+name: Dex Test ChatGPT
 
 jobs:
   chatgpt_comment:
     runs-on: ubuntu-latest
-    name: Let chatgpt comment on your PR.
+    name: Dex Let chatgpt comment on your PR.
     steps:
-      - name: ChatGPT comment
+      - name: Dex ChatGPT comment
         uses: dex3r/chatgpt-action@HEAD
         id: hello
         with:
           number: ${{ github.event.pull_request.number }}
-          openAiApiKey: ${{ secrets.CHATGPT_SESSION_TOKEN }}
+          openAiApiKey: ${{ secrets.CHATGPT_API_KEY }}
           split: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

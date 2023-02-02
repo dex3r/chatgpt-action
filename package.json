@@ -28,7 +28,8 @@
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
     "@octokit/action": "^4.0.10",
-    "chatgpt": "^4.0.4"
+    "chatgpt": "^4.0.4",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.31.1",

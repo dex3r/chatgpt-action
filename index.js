@@ -1,3 +1,5 @@
+import './fetch-polyfill'
+
 const core = require("@actions/core");
 
 const { createChatGPTAPI } = require("./chatgpt");

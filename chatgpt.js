@@ -25,25 +25,4 @@ async function callChatGPT(api, content, retryOn503) {
   }
 }
 
-function startConversation(api, retryOn503) {
-  const conversation = api.startConversation()
-  return {
-    conversation,
-    retryOn503,
-    async sendMessage(message) {
-      let cnt = 0;
-      while (cnt++ <= retryOn503) {
-        try {
-          const response = await conversation.sendMessage(message);
-          return response;
-        } catch (err) {
-          if (!is503or504Error(err)) throw err;
-          core.warning(`Got "${err}", sleep for 10s now!`);
-          await new Promise((r) => setTimeout(r, 10000));
-        }
-      }
-    },
-  };
-}
-
-module.exports = { createChatGPTAPI, callChatGPT, startConversation };
+module.exports = { createChatGPTAPI, callChatGPT };

@@ -47,28 +47,7 @@ async function callChatGPT(api, content, retryOn503) {
   }
 }
 
-function startConversation(api, retryOn503) {
-  const conversation = api.startConversation()
-  return {
-    conversation,
-    retryOn503,
-    async sendMessage(message) {
-      let cnt = 0;
-      while (cnt++ <= retryOn503) {
-        try {
-          const response = await conversation.sendMessage(message);
-          return response;
-        } catch (err) {
-          if (!is503or504Error(err)) throw err;
-          core.warning(`Got "${err}", sleep for 10s now!`);
-          await new Promise((r) => setTimeout(r, 10000));
-        }
-      }
-    },
-  };
-}
-
-module.exports = { createChatGPTAPI, callChatGPT, startConversation };
+module.exports = { createChatGPTAPI, callChatGPT };
 
 
 /***/ }),
@@ -22434,7 +22413,7 @@ module.exports = { genReviewPRPrompt, genReviewPRSplitedPrompt };
 
 const core = __nccwpck_require__(2186);
 const { genReviewPRPrompt, genReviewPRSplitedPrompt } = __nccwpck_require__(2814);
-const { callChatGPT, startConversation } = __nccwpck_require__(4835);
+const { callChatGPT } = __nccwpck_require__(4835);
 const { Octokit } = __nccwpck_require__(1231);
 const github = __nccwpck_require__(5438);
 const octokit = new Octokit();
@@ -22457,32 +22436,12 @@ async function runPRReview({ api, repo, owner, number, split }) {
     },
   });
   let reply;
-  if (split == "yolo") {
+
     const prompt = genReviewPRPrompt(title, body, diff);
     core.info(`The prompt is: ${prompt}`);
     const response = await callChatGPT(api, prompt, 5);
     reply = response;
-  } else {
-    reply = "";
-    const { welcomePrompts, diffPrompts, endPrompt } = genReviewPRSplitedPrompt(
-      title,
-      body,
-      diff,
-      65536
-    );
-    const conversation = startConversation(api, 5);
-    let cnt = 0;
-    const prompts = welcomePrompts.concat(diffPrompts);
-    prompts.push(endPrompt);
-    for (const prompt of prompts) {
-      core.info(`Sending ${prompt}`);
-      const response = await conversation.sendMessage(prompt);
-      core.info(`Received ${response}`);
-      reply += `**ChatGPT#${++cnt}**: ${response}\n\n`;
-      // Wait for 10s
-      await new Promise((r) => setTimeout(r, 10000));
-    }
-  }
+
   await octokit.issues.createComment({
     ...context.repo,
     issue_number: number,

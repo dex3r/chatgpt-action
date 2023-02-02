@@ -6,14 +6,11 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 const core = __nccwpck_require__(2186);
 
-async function createChatGPTAPI(sessionToken) {
+async function createChatGPTAPI(openAiApiKey) {
   // To use ESM in CommonJS, you can use a dynamic import
   const { ChatGPTAPI } = await __nccwpck_require__.e(/* import() */ 564).then(__nccwpck_require__.bind(__nccwpck_require__, 3564));
 
-  const api = new ChatGPTAPI({ sessionToken });
-
-  // ensure the API is properly authenticated
-  await api.ensureAuth();
+  const api = new ChatGPTAPI({ apiKey: openAiApiKey });
 
   return api;
 }
@@ -13971,7 +13968,7 @@ const { runPRReview } = __nccwpck_require__(1499);
 async function run() {
   try {
     const number = parseInt(core.getInput("number"));
-    const sessionToken = core.getInput("sessionToken");
+    const openAiApiKey = core.getInput("openAiApiKey");
     const mode = core.getInput("mode");
     const split = core.getInput("split");
 
@@ -13979,7 +13976,7 @@ async function run() {
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
     // Create ChatGPT API
-    const api = await createChatGPTAPI(sessionToken);
+    const api = await createChatGPTAPI(openAiApiKey);
 
     if (mode == "pr") {
       runPRReview({ api, owner, repo, number, split });

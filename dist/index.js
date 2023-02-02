@@ -22440,7 +22440,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
     const prompt = genReviewPRPrompt(title, body, diff);
     core.info(`The prompt is: ${prompt}`);
     const response = await callChatGPT(api, prompt, 5);
-    reply = response;
+    reply = response.text;
 
   await octokit.issues.createComment({
     ...context.repo,
